@@ -93,6 +93,14 @@ sudo sh scripts/install-pentagi.sh
 11. 常见问题
 附录：环境变量、默认端口、参考链接
 
+## 模型接入提示（OpenCode Go）
+
+用 OpenCode 的推理接口接 PentAGI 时注意两点：
+
+- Base URL 用 `https://opencode.ai/inference/v1`（带 `/openai` 会导致 `/models` 404，界面显示 No model found）
+- Go 订阅只覆盖 OpenCode 自家客户端；外部调 `/inference` 仍按量计费，余额为 0 会返回 `402 Insufficient account funds`，需在 Console → Extra usage 充值
+- 带 `-free` 后缀的模型外部调用返回 403
+
 ## 兼容性
 
 - 针对 PentAGI **2.2.x（CE）** 的前端结构编写，2.1.x 大体可用，更早版本未验证
