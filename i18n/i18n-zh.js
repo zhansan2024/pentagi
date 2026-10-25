@@ -657,6 +657,7 @@
       reverseWalk(document.body);
     }
     ensureLangEntry();
+    updateLangEntry();
   }
 
   function savedLang() {
@@ -722,7 +723,7 @@
       }
     });
     setInterval(() => {
-      try { if (enabled && location.pathname.startsWith('/settings')) ensureLangEntry(); } catch (e) { /* 忽略 */ }
+      try { if (location.pathname.startsWith('/settings')) ensureLangEntry(); } catch (e) { /* 忽略 */ }
     }, 2000);
 
     observer.observe(document.body, {
