@@ -687,8 +687,19 @@
       }
     });
 
+    ['pushState', 'replaceState'].forEach((k) => {
+      const orig = history[k];
+      history[k] = function () {
+        const r = orig.apply(this, arguments);
+        try { ensureLangEntry(); } catch (e) { /* 忽略 */ }
+        return r;
+      };
+    });
+    window.addEventListener('popstate', () => { try { ensureLangEntry(); } catch (e) { /* 忽略 */ } });
+
     observer = new MutationObserver((muts) => {
       if (!enabled) return;
+      if (!langEntryEl() && location.pathname.startsWith('/settings')) ensureLangEntry();
       for (const m of muts) {
         if (m.target && m.target.nodeType === 1 && m.target.closest && m.target.closest('[data-zh-skip]')) continue;
         if (m.type === 'childList') {
@@ -724,7 +735,7 @@
     });
     setInterval(() => {
       try { if (location.pathname.startsWith('/settings')) ensureLangEntry(); } catch (e) { /* 忽略 */ }
-    }, 2000);
+    }, 800);
 
     observer.observe(document.body, {
       childList: true,
