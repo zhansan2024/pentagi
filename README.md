@@ -23,7 +23,8 @@ scripts/
 - 表单标签、输入框占位符（含 TipTap 编辑器的 `data-placeholder`）、校验报错、确认对话框
 - Agent 角色名（Adviser / Coder / Enricher / Pentester / Searcher …）
 - 动态文案：`6 results` → `6 条结果`、`2 hours ago` → `2 小时前`
-- 右下角 **EN / 中文** 按钮随时切换，选择记在浏览器 `localStorage`
+- 语言切换：**设置页左侧「🌐 语言：中文」**，或快捷键 **Alt+L**；选择记在浏览器 `localStorage`
+- 脚本文件名带版本号（如 `i18n-zh-v4.js`），升级后会自动绕开浏览器缓存
 - 三层翻译：整句精确表 → 句式规则 → 词级兜底，新文案也能拼出大意
 
 **不会翻译**（也不该翻译）：模型名、服务商 ID、Agent 生成的分析正文。
@@ -50,6 +51,7 @@ sudo PENTAGI_DIR=/opt/pentagi PENTAGI_CONTAINER=pentagi sh scripts/apply-zh.sh
 ### 更新词表（热更新）
 
 直接改 `$PENTAGI_DIR/fe-zh/i18n-zh.js`，浏览器强刷即可，**不用重启容器**。
+如果改动没生效，复制成新文件名（如 `i18n-zh-v5.js`）并把 `index.html` 的 `<script src>` 指过去，可绕过浏览器缓存。
 
 ### 卸载
 

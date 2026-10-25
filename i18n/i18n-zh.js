@@ -6,6 +6,23 @@
 (function () {
   'use strict';
   if (window.__pentagiZhLoaded) return;
+  // URL 参数：?lang=zh / ?lang=en 设定语言后重载；?nolang=1 停用
+  try {
+    const m = location.search.match(/[?&]lang=(zh|en)(?:&|$)/);
+    if (m) {
+      localStorage.setItem('pentagi-lang', m[1]);
+      location.replace(location.pathname + location.hash);
+      return;
+    }
+  } catch (e) { /* 忽略 */ }
+
+  // 紧急开关：URL 带 ?nolang=1 时完全停用翻译（并记住），便于排查
+  try {
+    if (/(?:^|[?&])nolang=1(?:&|$)/.test(location.search)) {
+      localStorage.setItem("pentagi-lang", "off");
+      return;
+    }
+  } catch (e) { /* 忽略 */ }
   window.__pentagiZhLoaded = true;
 
   /* ========== 1. 整句精确表 ========== */
@@ -196,6 +213,24 @@
     'Folders first': '文件夹优先', 'Relative dates': '相对时间',
     'Column settings': '列设置', 'Delete Assistant': '删除助手',
     'Previous match': '上一个匹配', 'Next match': '下一个匹配',
+    'Primary Agent': '主 Agent', 'Simple': '简单任务', 'Simple Json': '简单 JSON',
+    'Searches': '搜索', 'Duration': '时长', 'Subtasks': '子任务',
+    "Starting a new task may take some time as the PentAGI agent downloads the required Docker image": "新任务启动可能需要一点时间，PentAGI 的 Agent 正在下载所需的 Docker 镜像。",
+    "The flow is starting...": "任务流正在启动…",
+    "The flow is starting": "任务流正在启动",
+
+    'Upload files to make them available at /work/uploads, or use Pull to sync files from the running container. You can also drag & drop files here.': '上传文件后会出现在 /work/uploads，也可以用「拉取」从运行中的容器同步文件，还支持直接拖拽到此处。',
+    'This flow has ended. Create a new one to continue.': '该任务流已结束，新建一个继续。',
+    'No vector store logs available': '暂无向量库日志',
+    'No vector store logs found': '没有向量库日志',
+    'No search logs available': '暂无搜索日志',
+    'No search logs found': '没有搜索日志',
+
+    'Base URL': '接口地址', 'API Key': 'API 密钥', 'API Keys': 'API 密钥',
+    'Model': '模型', 'Models': '模型', 'Advanced': '高级', 'Default': '默认', 'Clone': '克隆',
+    'Test connection': '测试连接', 'Add': '添加', 'Enabled': '已启用', 'Disabled': '已停用',
+
+
     'Local': '本地账号', 'Theme': '主题', 'Profile': '个人资料',
     'Local account': '本地账号', 'Local Account': '本地账号',
 
@@ -300,6 +335,12 @@
     [/^LLM token usage and costs grouped by (.+)$/i, (m, a) => `按${tr(a)}统计的 LLM Token 用量与成本`],
     [/^(.+) per day$/i, (m, a) => `每日${tr(a)}`],
     [/^(\d+) MB per file$/i, '$1 MB / 文件'],
+    [/^Subtasks: (.+) · Assistants: (.+)$/i, (m, a, b) => `子任务：${a} · 助手：${b}`],
+    [/^Duration: (.+)$/i, (m, a) => `时长：${a}`],
+    [/^Searches: (.+)$/i, (m, a) => `搜索：${a}`],
+
+    [/^Upload files to make them available.*$/i, () => '上传文件后会出现在 /work/uploads，也可以用「拉取」从运行中的容器同步文件，还支持直接拖拽到此处。'],
+    [/^Provider type ["“'](.+)["”'] is not available$/i, (m, a) => `服务商类型「${a}」未启用（需在 .env 配置对应 API Key 后重启）`],
   ];
 
   /* ========== 3. 词级兜底 ========== */
@@ -346,10 +387,26 @@
     updated: '已更新', deleted: '已删除', running: '运行中', waiting: '等待中',
     completed: '已完成', stopped: '已停止', pending: '等待中',
     size: '大小', modified: '修改时间', installed: '已安装', release: '版本',
+    vector: '向量', store: '库', logs: '日志', searches: '搜索', duration: '时长',
+    upload: '上传', files: '文件', available: '可用', use: '使用', pull: '拉取',
+    sync: '同步', running: '运行中', container: '容器', drag: '拖拽', drop: '放下',
+    here: '此处', or: '或', at: '在', running_container: '运行中的容器',
+
+    ended: '已结束', continue: '继续', pull: '拉取', sync: '同步', drag: '拖拽',
+
     unknown: '未知', preset: '预设', presets: '预设', preview: '预览版',
     execution: '执行', executions: '执行', breakdown: '明细', period: '时间段',
     spending: '花费', status: '状态', update: '更新', check: '检查', failed: '失败',
   };
+
+  /* 反向表：中文 -> 英文（用于切回英文时，修复 React 重渲染后丢失原文的节点） */
+  const REVERSE = (() => {
+    const r = {};
+    for (const [en, zh] of Object.entries(PHRASES)) {
+      if (!(zh in r)) r[zh] = en;
+    }
+    return r;
+  })();
 
   /* ========== 实现 ========== */
   const ATTRS = ['placeholder', 'title', 'aria-label', 'alt', 'data-placeholder', 'aria-placeholder'];
@@ -475,6 +532,37 @@
     return out;
   }
 
+  function reverseWalk(root) {
+    if (!root || root.nodeType !== 1) return;
+    if (root.tagName === 'SCRIPT' || root.tagName === 'STYLE') return;
+    if (root.hasAttribute?.('data-zh-skip')) return;
+
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    const nodes = [];
+    let n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    for (const node of nodes) {
+      const p = node.parentElement;
+      if (!p || SKIP_TAGS.has(p.tagName) || p.closest('[data-zh-skip]')) continue;
+      const cur = (node.nodeValue || '').trim();
+      if (!cur) continue;
+      const en = REVERSE[cur];
+      if (!en) continue;
+      const lead = node.nodeValue.match(/^\s*/)[0];
+      const tail = node.nodeValue.match(/\s*$/)[0];
+      node.nodeValue = lead + en + tail;
+    }
+    for (const el of root.querySelectorAll('*')) {
+      if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') continue;
+      for (const a of ATTRS) {
+        const v = el.getAttribute(a);
+        if (!v) continue;
+        const en = REVERSE[v.trim()];
+        if (en) el.setAttribute(a, en);
+      }
+    }
+  }
+
   function restoreAll() {
     for (const el of collectNodes()) {
       const bag = attrOrig.get(el);
@@ -494,31 +582,67 @@
     }
   }
 
-  function makeButton() {
-    if (document.getElementById('pentagi-lang-toggle')) return;
-    const btn = document.createElement('button');
-    btn.id = 'pentagi-lang-toggle';
-    btn.type = 'button';
-    btn.setAttribute('data-zh-skip', '1');
-    Object.assign(btn.style, {
-      position: 'fixed', right: '18px', bottom: '18px', zIndex: '2147483647',
-      padding: '8px 14px', borderRadius: '999px', border: '1px solid rgba(255,255,255,.18)',
-      background: 'rgba(20,24,30,.92)', color: '#e8edf4',
-      font: '600 12px/1.2 -apple-system,"PingFang SC",sans-serif',
-      cursor: 'pointer', boxShadow: '0 6px 20px rgba(0,0,0,.35)', opacity: '.85',
+  function toast(msg) {
+    const t = document.createElement('div');
+    t.setAttribute('data-zh-skip', '1');
+    Object.assign(t.style, {
+      position: 'fixed', left: '50%', bottom: '96px', transform: 'translateX(-50%)',
+      zIndex: '2147483647', padding: '8px 16px', borderRadius: '8px',
+      background: 'rgba(20,24,30,.95)', color: '#e8edf4',
+      font: '500 13px/1.4 -apple-system,"PingFang SC",sans-serif',
+      border: '1px solid rgba(255,255,255,.15)', pointerEvents: 'none',
     });
-    btn.onmouseenter = () => (btn.style.opacity = '1');
-    btn.onmouseleave = () => (btn.style.opacity = '.85');
-    btn.onclick = () => setLang(enabled ? 'en' : 'zh');
-    document.body.appendChild(btn);
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 1600);
   }
 
-  function refreshButton() {
-    makeButton();
-    const btn = document.getElementById('pentagi-lang-toggle');
-    if (!btn) return;
-    btn.textContent = enabled ? 'EN' : '中文';
-    btn.title = enabled ? '切换到英文' : '切换到中文';
+  function langEntryEl() { return document.getElementById('pentagi-lang-entry'); }
+
+  function ensureLangEntry() {
+    // 旧版悬浮按钮：清掉
+    const old = document.getElementById('pentagi-lang-toggle');
+    if (old) old.remove();
+
+    if (!location.pathname.startsWith('/settings')) return;
+    const anchors = [...document.querySelectorAll('a,button')].filter((el) => {
+      const t = (el.textContent || '').trim();
+      return t === 'API 令牌' || t === 'API Tokens';
+    });
+    const anchor = anchors[anchors.length - 1];
+    if (!anchor) return;
+    const parent = anchor.parentElement;
+    if (!parent) return;
+    const existing = langEntryEl();
+    if (existing && parent.contains(existing)) { updateLangEntry(); return; }
+
+    const entry = document.createElement('a');
+    entry.id = 'pentagi-lang-entry';
+    entry.href = 'javascript:void(0)';
+    entry.setAttribute('data-zh-skip', '1');
+    if (anchor.className) entry.className = anchor.className;
+    Object.assign(entry.style, {
+      display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer',
+      padding: '8px 12px', borderRadius: '8px', color: 'inherit',
+      textDecoration: 'none', fontSize: '14px', marginTop: '2px',
+    });
+    entry.addEventListener('click', (e) => {
+      e.preventDefault();
+      const next = enabled ? 'en' : 'zh';
+      setLang(next);
+      toast(next === 'zh' ? '已切换为中文' : 'Switched to English');
+    });
+    anchor.insertAdjacentElement('afterend', entry);
+    updateLangEntry();
+  }
+
+  function updateLangEntry() {
+    const entry = langEntryEl();
+    if (!entry) return;
+    const label = enabled ? '🌐 语言：中文' : '🌐 Language: English';
+    if (entry.textContent !== label) entry.textContent = label;
+    const tip = enabled ? '点击切换到英文（快捷键 Alt+L）' : 'Click to switch to Chinese (Alt+L)';
+    if (entry.title !== tip) entry.title = tip;
   }
 
   function setLang(lang) {
@@ -530,13 +654,15 @@
     } else {
       document.documentElement.lang = 'en';
       restoreAll();
+      reverseWalk(document.body);
     }
-    refreshButton();
+    ensureLangEntry();
   }
 
   function savedLang() {
     try {
       const v = localStorage.getItem(LS_KEY);
+      if (v === 'off') return 'off';
       if (v === 'en' || v === 'zh') return v;
       const al = (navigator.language || '').toLowerCase();
       return al.indexOf('zh') === 0 ? 'zh' : 'en';
@@ -544,14 +670,26 @@
   }
 
   function boot() {
-    enabled = savedLang() !== 'en';
+    const sl = savedLang();
+    if (sl === 'off') { enabled = false; document.documentElement.lang = 'en'; return; }
+    enabled = sl !== 'en';
     document.documentElement.lang = enabled ? 'zh-CN' : 'en';
     if (enabled) walk(document.body);
-    refreshButton();
+    ensureLangEntry();
+
+    document.addEventListener('keydown', (e) => {
+      if (e.altKey && (e.key === 'l' || e.key === 'L')) {
+        e.preventDefault();
+        const next = enabled ? 'en' : 'zh';
+        setLang(next);
+        toast(next === 'zh' ? '已切换为中文' : 'Switched to English');
+      }
+    });
 
     observer = new MutationObserver((muts) => {
       if (!enabled) return;
       for (const m of muts) {
+        if (m.target && m.target.nodeType === 1 && m.target.closest && m.target.closest('[data-zh-skip]')) continue;
         if (m.type === 'childList') {
           for (const node of m.addedNodes) {
             if (node.nodeType === 1) walk(node);
@@ -583,6 +721,10 @@
         }
       }
     });
+    setInterval(() => {
+      try { if (enabled && location.pathname.startsWith('/settings')) ensureLangEntry(); } catch (e) { /* 忽略 */ }
+    }, 2000);
+
     observer.observe(document.body, {
       childList: true,
       subtree: true,
@@ -594,6 +736,9 @@
 
   window.__pentagiZh = { tr, PHRASES, WORDS, RULES };
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
-  else boot();
+  function safeBoot() {
+    try { boot(); } catch (e) { console.error('[i18n] boot failed', e); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeBoot);
+  else safeBoot();
 })();
