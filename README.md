@@ -103,6 +103,27 @@ sudo sh scripts/install-pentagi.sh
 - Go 订阅只覆盖 OpenCode 自家客户端；外部调 `/inference` 仍按量计费，余额为 0 会返回 `402 Insufficient account funds`，需在 Console → Extra usage 充值
 - 带 `-free` 后缀的模型外部调用返回 403
 
+## 长期同步（两个仓库）
+
+本仓库同时推 GitHub 和 Gitea。Gitea 用令牌存文件的方式，配一次以后不用再输入：
+
+```sh
+# 1. 在 Gitea → 设置 → 应用 → 生成令牌，权限选 repository 读写
+# 2. 存到持久盘（权限 600）
+mkdir -p /home/opencode/workspace/.secrets
+read -rsp "Gitea Token: " T; echo
+printf '%s' "$T" > /home/opencode/workspace/.secrets/gitea-token
+chmod 600 /home/opencode/workspace/.secrets/gitea-token; unset T
+
+# 3. 让本仓库自动读取（只需一次）
+git config --local credential.helper '!f() { echo username=gitadmin; echo "password=$(cat /home/opencode/workspace/.secrets/gitea-token)"; }; f'
+
+# 4. 以后一条命令同步两边
+./sync.sh "更新说明"
+```
+
+GitHub 用 Deploy key（私钥默认 `/root/.ssh/github_pentagi`）。令牌与私钥都不进仓库（`.secrets/` 已在 .gitignore）。
+
 ## 兼容性
 
 - 针对 PentAGI **2.2.x（CE）** 的前端结构编写，2.1.x 大体可用，更早版本未验证
