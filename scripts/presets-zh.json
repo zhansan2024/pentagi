@@ -1,0 +1,46 @@
+{
+  "Web Application Security Assessment": {
+    "title": "Web 应用安全评估",
+    "text": "对以下 Web 应用执行全面的安全评估：{{TARGET_URL}}\n\n执行计划：\n1. 应用勘探：遍历所有页面与功能，梳理接口和输入点\n2. 按接口逐个做漏洞测试：\n   - 路径穿越：尝试读取 /etc/passwd，重点测文件下载/上传功能\n   - XSS：注入唯一标记，扫描响应，构造与上下文匹配的载荷\n   - SQL 注入：对输入点跑 sqlmap，必要时用 tamper 脚本绕过 WAF\n   - 命令注入：用时间盲注探测，尝试 commix\n   - SSRF：用 Interactsh 做带外验证，重点关注文件上传/PDF 生成接口\n   - XXE：测试 XML 上传与 Office 文档解析\n   - 任意文件上传：测试可执行扩展名、双扩展名、空字节截断\n   - CSRF：测试令牌校验，以及 POST 转 GET 的绕过\n3. 认证与会话：测试认证缺陷、会话固定、弱口令策略\n4. 业务逻辑：识别越权、价格篡改、流程绕过\n5. 报告：记录所有发现，附复现步骤和可用的 PoC"
+  },
+  "Network Infrastructure Discovery & Mapping": {
+    "title": "网络基础设施发现与测绘",
+    "text": "对目标网络执行基础设施侦察与测绘：{{TARGET_NETWORK}}\n\n执行计划：\n1. 网络发现：用 nmap ping 扫描识别存活主机，绘制网络拓扑\n2. 端口扫描：全端口扫描（1-65535），识别所有开放服务\n3. 服务识别：指纹识别服务版本，探测操作系统信息\n4. 漏洞扫描：对发现的服务执行自动化漏洞扫描\n5. SSL/TLS 分析：检查证书有效性、弱加密套件、协议漏洞\n6. 横幅抓取：采集详细服务信息，供后续漏洞研究\n7. 拓扑图：输出已发现基础设施的可视化网络图\n8. 报告：按优先级列出主机、服务与潜在攻击路径"
+  },
+  "Active Directory Penetration Test": {
+    "title": "Active Directory 渗透测试",
+    "text": "对以下域环境执行 Active Directory 安全评估：{{DOMAIN_NAME}}\n\n执行计划：\n1. 初始访问：测试密码喷洒，检查 AS-REP roasting，寻找可 Kerberoast 的账号\n2. 域内枚举：枚举用户、组、计算机、GPO 与信任关系\n3. 权限提升：识别配置错误的 ACL，检查可利用的组成员关系与委派问题\n4. 凭据收集：在 SYSVOL 中搜索凭据，检查 AD 属性中的口令，条件允许时导出 NTDS.dit\n5. 横向移动：测试 pass-the-hash、pass-the-ticket、overpass-the-hash\n6. 持久化：识别黄金票据、白银票据、DCSync 权限的利用机会\n7. 域管路径：从当前权限出发，梳理通向 Domain Admin 的攻击路径\n8. 报告：记录攻击链、被攻陷账号与 AD 配置中的安全缺口"
+  },
+  "API Security Testing": {
+    "title": "API 安全测试",
+    "text": "对以下 API 执行全面的安全测试：{{API_BASE_URL}}\n\n执行计划：\n1. API 梳理：识别所有接口、HTTP 方法、参数\n2. 认证测试：测试认证缺陷、令牌篡改、JWT 漏洞\n3. 授权测试：测试对象级越权（BOLA/IDOR）、功能级越权\n4. 输入校验：测试注入类攻击（SQL、NoSQL、命令、XXE）与批量赋值\n5. 限流测试：检查是否缺少限流与暴力破解防护\n6. 业务逻辑：测试数据过度暴露、资源限制缺失、API 滥用\n7. 安全配置：检查 CORS 策略、安全响应头、报错信息是否泄露细节\n8. GraphQL 专项（如适用）：测试内省、查询深度限制、批量查询攻击\n9. 报告：用 curl/Postman 给出可复现的 PoC"
+  },
+  "Cloud Infrastructure Security Audit (AWS)": {
+    "title": "云基础设施安全审计（AWS）",
+    "text": "对以下 AWS 环境执行安全审计：{{AWS_ACCOUNT_ID 或 DOMAIN}}\n\n执行计划：\n1. 资产侦察：识别 S3 桶、EC2 实例、公网端点，通过 DNS 枚举服务\n2. S3 安全：测试桶权限、公开访问、ACL 配置错误、桶策略\n3. IAM 评估：审查角色与策略，查找过宽权限和闲置凭据\n4. EC2 安全：扫描开放的安全组，测试实例元数据服务（169.254.169.254），检查 IMDSv2\n5. 网络安全：审查 VPC、安全组、NACL、公有子网\n6. 数据库暴露：检查 RDS 是否公网可达、安全组与加密配置\n7. Lambda：测试函数 URL 暴露、环境变量泄露、执行角色权限\n8. 日志与监控：确认 CloudTrail 已开启，检查安全监控盲区\n9. 报告：按风险优先级给出云安全发现与修复建议"
+  },
+  "WordPress Security Assessment": {
+    "title": "WordPress 安全评估",
+    "text": "对以下 WordPress 站点执行安全评估：{{WORDPRESS_URL}}\n\n执行计划：\n1. 版本识别：识别核心版本、主题与启用的插件\n2. 插件漏洞：枚举插件，用 WPScan 与 Sploitus 比对已知 CVE\n3. 主题漏洞：识别主题版本，检索已知利用\n4. 用户枚举：通过 REST API、作者归档、登录响应枚举有效用户名\n5. 认证测试：测试弱口令、暴力破解防护、2FA 绕过\n6. 文件上传：测试媒体上传限制与任意文件上传\n7. XML-RPC：检查是否开启，测试 pingback SSRF 与暴力破解放大\n8. SQL 注入：测试搜索功能、自定义查询参数与插件输入点\n9. XSS 测试：测试评论、搜索、联系表单与自定义字段\n10. 配置问题：检查 wp-config.php 暴露、目录列表、敏感文件访问\n11. 报告：给出 WordPress 相关漏洞与利用步骤"
+  },
+  "External Attack Surface Assessment": {
+    "title": "外部攻击面评估",
+    "text": "对以下组织执行外部攻击面评估：{{ORGANIZATION_NAME 或 DOMAIN}}\n\n执行计划：\n1. 资产发现：枚举域名、子域名（subfinder、amass）、IP 段与 ASN 信息\n2. 证书透明日志：在 crt.sh 检索子域名，找出被遗忘的资产\n3. 端口扫描：对发现的资产扫描开放端口与服务\n4. Web 指纹：识别技术栈、CMS、框架与服务器版本\n5. 邮件安全：检查 SPF、DKIM、DMARC 记录与邮件伪造可能性\n6. 云资产发现：搜索暴露的 S3 桶、Azure Blob、云数据库\n7. 敏感数据暴露：在 GitHub、GitLab、Pastebin 搜索泄露的凭据与密钥\n8. 第三方集成：识别 SaaS 应用、API 端点与合作方集成\n9. 漏洞定级：筛出互联网可达的高危漏洞\n10. 报告：输出攻击面全图与按风险排序的发现"
+  },
+  "Internal Network Penetration Test": {
+    "title": "内网渗透测试",
+    "text": "从以下初始立足点开展内网渗透测试：{{INITIAL_ACCESS_LEVEL}}\n\n执行计划：\n1. 内网侦察：ARP 扫描，识别网段，绘制内网结构\n2. 服务发现：对内网主机做全面端口扫描，定位关键服务器\n3. SMB/NetBIOS 枚举：测试空会话、枚举共享、检查匿名访问\n4. 凭据攻击：LLMNR/NBT-NS 投毒（Responder）、中继攻击、密码喷洒\n5. 漏洞利用：利用未打补丁的服务，测试默认口令与已知 CVE\n6. 权限提升：利用本地漏洞、配置错误的服务与过宽权限\n7. 横向移动：pass-the-hash、令牌模拟、利用信任关系\n8. 数据外带：定位敏感数据位置，测试数据防泄漏控制\n9. 持久化：建立持久化访问手段\n10. 报告：记录内网安全现状、攻击路径图与修复优先级"
+  },
+  "Mobile Application Security Testing (API Backend)": {
+    "title": "移动应用安全测试（API 后端）",
+    "text": "对移动应用的后端 API 执行安全测试：{{API_URL}}\n\n执行计划：\n1. 流量分析：分析 App 流量，提取接口与认证方式\n2. 认证机制：测试 OAuth 流程、JWT 实现、刷新令牌处理、证书绑定绕过\n3. 接口测试：对所有接口测试 BOLA/IDOR 与功能级越权\n4. 数据校验：测试参数注入，测试文件上传接口\n5. 业务逻辑：测试会员功能绕过、订阅校验、应用内购买验证\n6. 会话管理：测试令牌过期、并发会话、会话固定\n7. 敏感数据：检查 PII 暴露、响应数据过量、硬编码密钥\n8. 限流：测试登录暴力破解防护、接口限流、账号锁定\n9. 深度链接：测试 Deep Link 劫持、Intent 重定向（Android）、URL Scheme 滥用（iOS）\n10. 报告：给出移动端相关漏洞与修复建议"
+  },
+  "DevOps & CI/CD Pipeline Security": {
+    "title": "DevOps 与 CI/CD 管道安全",
+    "text": "评估 DevOps 基础设施与 CI/CD 管道安全：{{ORGANIZATION}}\n\n执行计划：\n1. 代码仓库安全：扫描 GitHub/GitLab 提交历史中泄露的密钥与凭据\n2. CI/CD 配置：审查 Jenkins/GitLab CI/GitHub Actions 配置，测试管道定义中的注入\n3. 容器安全：扫描镜像漏洞，测试容器逃逸，核查镜像来源\n4. 密钥管理：测试密钥存储（Vault、AWS Secrets Manager），检查硬编码密钥\n5. 访问控制：审查仓库权限、流水线权限、部署密钥与服务账号\n6. 制品安全：扫描构建产物，测试制品库（Nexus、Artifactory）访问控制\n7. Kubernetes 安全：审查 Pod 安全策略、RBAC、网络策略与暴露的 Dashboard\n8. 基础设施即代码：审查 Terraform/Ansible 配置错误与过宽 IAM 角色\n9. 监控与日志：验证安全日志、测试日志篡改、检查监控盲区\n10. 报告：给出 DevOps 安全发现与安全流水线建议"
+  },
+  "Database Security Assessment": {
+    "title": "数据库安全评估",
+    "text": "对以下数据库执行安全评估：{{DATABASE_TYPE}} @ {{HOST:PORT}}\n\n执行计划：\n1. 访问测试：测试默认口令、弱口令、匿名访问\n2. 网络暴露：确认数据库不应公网可达，检查防火墙规则\n3. 认证：测试认证机制、用户枚举、口令策略\n4. 授权：审查用户权限，测试提权与过度授权\n5. 注入测试：应用层 SQL 注入，测试存储过程注入\n6. 配置审查：检查危险配置（xp_cmdshell、LOAD DATA、file_priv）\n7. 加密：核查静态加密、连接 SSL/TLS、明文敏感数据\n8. 备份安全：测试备份文件访问、备份加密、恢复流程\n9. 审计日志：确认审计日志开启，测试日志篡改，检查留存策略\n10. 报告：给出数据库安全发现与加固建议"
+  }
+}

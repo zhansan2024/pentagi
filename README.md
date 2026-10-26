@@ -95,6 +95,18 @@ sudo sh scripts/install-pentagi.sh
 11. 常见问题
 附录：环境变量、默认端口、参考链接
 
+## 预设模板汉化
+
+PentAGI 内置的 11 个「预设模板」硬编码在前端打包产物里，不是数据库数据，运行时翻译只能改显示、不能改填充内容。仓库提供 `scripts/patch-presets-zh.cjs` 直接改包：
+
+```sh
+FE_DIR=/vol3/1000/opencode生成文件/pentagi-zh/fe-zh \
+SRC_TSX=/tmp/pentagi/frontend/src/pages/templates/template.tsx \
+node scripts/patch-presets-zh.cjs
+```
+
+翻译表在同目录 `presets-zh.json`。脚本会生成 `template-zh1.js` / `index-zh1.js` 并改写 `index.html`，浏览器强刷即可。
+
 ## 模型接入提示（OpenCode Go）
 
 用 OpenCode 的推理接口接 PentAGI 时注意两点：
