@@ -308,6 +308,16 @@
 
   /* ========== 1b. 批量补充（自动生成） ========== */
   Object.assign(PHRASES, {
+    'Undo': '撤销', 'Redo': '重做', 'Bold': '加粗', 'Italic': '斜体',
+    'Strikethrough': '删除线', 'Underline': '下划线', 'Link': '链接', 'Unlink': '取消链接',
+    'Bullet list': '无序列表', 'Ordered list': '有序列表', 'Task list': '任务列表',
+    'Blockquote': '引用块', 'Heading 1': '标题 1', 'Heading 2': '标题 2', 'Heading 3': '标题 3',
+    'Align left': '左对齐', 'Align center': '居中对齐', 'Align right': '右对齐', 'Justify': '两端对齐',
+    'Insert table': '插入表格', 'Add column before': '左侧插入列', 'Add column after': '右侧插入列',
+    'Add row before': '上方插入行', 'Add row after': '下方插入行', 'Merge cells': '合并单元格',
+    'Split cell': '拆分单元格', 'Toggle header row': '切换表头行', 'Increase indent': '增加缩进',
+    'Decrease indent': '减少缩进', 'Horizontal rule': '分隔线', 'Clear formatting': '清除格式',
+    'Text style': '文本样式', 'Paragraph': '正文', 'Code block': '代码块', 'Inline code': '行内代码',
     'vulnerability': '漏洞', 'tool': '工具', 'tools': '工具', 'exploit': '利用',
     'configure': '配置', 'development': '开发', 'install': '安装', 'other': '其他',
     'pentest': '渗透测试', 'usage': '使用', 'answer': '答案', 'guide': '指南',
