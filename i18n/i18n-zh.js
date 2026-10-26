@@ -308,6 +308,9 @@
 
   /* ========== 1b. 批量补充（自动生成） ========== */
   Object.assign(PHRASES, {
+    'configure': '配置', 'development': '开发', 'install': '安装', 'other': '其他',
+    'pentest': '渗透测试', 'usage': '使用', 'answer': '答案', 'guide': '指南',
+    'code': '代码', 'document': '文档', 'reference': '参考', 'tutorial': '教程',
     'PentAGI is up to date': 'PentAGI 已是最新版本',
     'Checked': '检查时间', 'Up to date': '已是最新', 'Update available': '有可用更新',
     'preview channel': '预览频道', 'stable channel': '稳定频道', 'Preview channel': '预览频道',
