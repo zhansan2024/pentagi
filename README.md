@@ -107,6 +107,18 @@ node scripts/patch-presets-zh.cjs
 
 翻译表在同目录 `presets-zh.json`。脚本会生成 `template-zh1.js` / `index-zh1.js` 并改写 `index.html`，浏览器强刷即可。
 
+## 中文模板导入（11 条）
+
+PentAGI 的内置预设是前端硬编码，改包容易把页面搞崩；更稳的做法是把中文模板直接写进数据库：
+
+```sh
+node scripts/export-templates-sql.cjs /tmp/import-templates-zh.sql admin@pentagi.com
+# 宿主机执行
+sudo docker exec -i pgvector psql -U postgres -d pentagidb < /tmp/import-templates-zh.sql
+```
+
+依赖表 `flow_templates(user_id, title, text)`，账号列是 `users.mail`（不是 email）。脚本幂等，重复执行不会重复插入。
+
 ## 模型接入提示（OpenCode Go）
 
 用 OpenCode 的推理接口接 PentAGI 时注意两点：
