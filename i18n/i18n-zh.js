@@ -693,7 +693,8 @@
       node.nodeValue = lead + zh + tail;
     }
 
-    for (const el of root.querySelectorAll('*')) {
+    // 注意：root 自身的属性也要处理（TipTap 的 data-placeholder 挂在编辑器根节点上）
+    for (const el of [root, ...root.querySelectorAll('*')]) {
       if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') continue;
       for (const a of ATTRS) {
         const v = el.getAttribute(a);
