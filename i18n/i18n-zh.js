@@ -216,6 +216,10 @@
     'Primary Agent': '主 Agent', 'Simple': '简单任务', 'Simple Json': '简单 JSON',
     'Active Directory Penetration Test': 'Active Directory 渗透测试',
     'Expires': '过期时间', 'Pick date': '选择日期', 'All': '全部', 'N/A': '—',
+    'Replace content?': '替换内容？',
+    'Current form has content. Replace with the selected preset?': '当前表单已有内容，确定用所选预设替换吗？',
+    'Replace': '替换', 'Cancel': '取消', 'Confirm': '确定',
+
     'Token': '令牌', 'Filter': '筛选', 'Per page': '每页行数', 'Showing': '显示',
     'No tokens': '暂无令牌', 'Expired': '已过期',
 
