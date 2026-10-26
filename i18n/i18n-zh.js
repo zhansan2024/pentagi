@@ -514,10 +514,16 @@
     [/^Are you sure you want to (.+)\? This action cannot be undone\.$/i, (m, a) => `确定要${tr(a)}吗？此操作不可撤销。`],
     [/^(.+) is the newest version on the (.+) channel\.$/i, (m, a, b) => `${a} 是${/preview/i.test(b) ? '预览' : /stable/i.test(b) ? '稳定' : tr(b)}频道的最新版本。`],
     [/^(.+) channel$/i, (m, a) => `${tr(a)}频道`],
+    [/^about (.+)$/i, (m, a) => `约${tr(a)}`],
+    [/^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2})$/i, (m, a, b) => {
+      const map = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+      return `${map[a.toLowerCase()]}月${b}日`;
+    }],
   ];
 
   /* ========== 3. 词级兜底 ========== */
   const WORDS = {
+    about: '约', hour: '小时', minute: '分钟', day: '天',
     channel: '频道', newest: '最新', preview: '预览', stable: '稳定',
     fetch: '获取', wait: '等待', please: '请', your: '你的', while: '同时',
     renamed: '已重命名',
