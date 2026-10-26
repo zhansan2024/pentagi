@@ -308,6 +308,7 @@
 
   /* ========== 1b. 批量补充（自动生成） ========== */
   Object.assign(PHRASES, {
+    'Heading 4': '标题 4', 'Heading 5': '标题 5', 'Heading 6': '标题 6', 'Text': '正文',
     'Undo': '撤销', 'Redo': '重做', 'Bold': '加粗', 'Italic': '斜体',
     'Strikethrough': '删除线', 'Underline': '下划线', 'Link': '链接', 'Unlink': '取消链接',
     'Bullet list': '无序列表', 'Ordered list': '有序列表', 'Task list': '任务列表',
