@@ -308,6 +308,9 @@
 
   /* ========== 1b. 批量补充（自动生成） ========== */
   Object.assign(PHRASES, {
+    'PentAGI is up to date': 'PentAGI 已是最新版本',
+    'Checked': '检查时间', 'Up to date': '已是最新', 'Update available': '有可用更新',
+    'preview channel': '预览频道', 'stable channel': '稳定频道', 'Preview channel': '预览频道',
     'Please wait while we fetch your knowledge documents': '正在获取知识文档，请稍候',
     'Please wait while we fetch your prompt information': '正在获取提示词信息，请稍候',
     'Please wait while we fetch your API tokens': '正在获取 API 令牌，请稍候',
@@ -492,10 +495,13 @@
     [/^Failed to (.+)$/i, (m, a) => `${tr(a)}失败`],
     [/^Maximum (\d+) characters allowed$/i, (m, a) => `最多允许 ${a} 个字符`],
     [/^Are you sure you want to (.+)\? This action cannot be undone\.$/i, (m, a) => `确定要${tr(a)}吗？此操作不可撤销。`],
+    [/^(.+) is the newest version on the (.+) channel\.$/i, (m, a, b) => `${a} 是${/preview/i.test(b) ? '预览' : /stable/i.test(b) ? '稳定' : tr(b)}频道的最新版本。`],
+    [/^(.+) channel$/i, (m, a) => `${tr(a)}频道`],
   ];
 
   /* ========== 3. 词级兜底 ========== */
   const WORDS = {
+    channel: '频道', newest: '最新', preview: '预览', stable: '稳定',
     fetch: '获取', wait: '等待', please: '请', your: '你的', while: '同时',
     renamed: '已重命名',
     destination: '目标',
