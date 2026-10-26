@@ -308,6 +308,7 @@
 
   /* ========== 1b. 批量补充（自动生成） ========== */
   Object.assign(PHRASES, {
+    'vulnerability': '漏洞', 'tool': '工具', 'tools': '工具', 'exploit': '利用',
     'configure': '配置', 'development': '开发', 'install': '安装', 'other': '其他',
     'pentest': '渗透测试', 'usage': '使用', 'answer': '答案', 'guide': '指南',
     'code': '代码', 'document': '文档', 'reference': '参考', 'tutorial': '教程',
